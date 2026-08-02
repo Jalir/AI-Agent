@@ -12,9 +12,15 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends curl \
     && rm -rf /var/lib/apt/lists/*
 
+# 国内构建默认走清华源；海外可覆盖：
+#   docker compose -f docker-compose.prod.yml build --build-arg PIP_INDEX_URL=https://pypi.org/simple
+ARG PIP_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple
+ARG PIP_TRUSTED_HOST=pypi.tuna.tsinghua.edu.cn
+
 COPY backend/requirements.txt /app/backend/requirements.txt
 RUN pip install --upgrade pip \
-    && pip install -r /app/backend/requirements.txt
+    && pip install -i "${PIP_INDEX_URL}" --trusted-host "${PIP_TRUSTED_HOST}" \
+       -r /app/backend/requirements.txt
 
 COPY backend /app/backend
 
