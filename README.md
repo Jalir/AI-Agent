@@ -21,49 +21,49 @@
 
 基于已入库文档做 RAG 检索问答：Embedding 召回 + Rerank 精排，流式返回答案，并可回溯引用片段。
 
-![知识库问答](docs/images/1知识库问答.png)
+![知识库问答](docs/images/01-kb-qa.png)
 
 ### 2. 知识库管理
 
 维护知识库与文档：上传、分层索引、查看入库状态，支撑后续检索问答。
 
-![知识库管理](docs/images/2知识库管理.png)
+![知识库管理](docs/images/02-kb-manage.png)
 
 ### 3. 声音克隆
 
 上传参考音频，克隆音色后合成指定文本的语音，适合演示、配音等场景。
 
-![声音克隆](docs/images/3声音克隆.png)
+![声音克隆](docs/images/03-voice-clone.png)
 
 ### 4. 转录音频
 
 上传语音文件，自动转写为文本，便于会议记录、素材整理与二次编辑。
 
-![转录音频](docs/images/4转录音频.png)
+![转录音频](docs/images/04-audio-transcribe.png)
 
 ### 5. 文档问答
 
 临时工作区：上传文档后直接问答，无需写入长期知识库，到期自动清理。
 
-![文档问答](docs/images/5文档问答.png)
+![文档问答](docs/images/05-doc-qa.png)
 
 ### 6. Excel 数据分析
 
 上传销售 / 业务 Excel，用自然语言提问，自动解析表格并给出分析结论。
 
-![Excel 数据分析](docs/images/6excel数据分析.png)
+![Excel 数据分析](docs/images/06-excel-analysis.png)
 
 ### 7. 数据分析
 
 面向业务指标与趋势的可视化分析视图，配合对话快速解读数据。
 
-![数据分析](docs/images/7数据分析.png)
+![数据分析](docs/images/07-data-analysis.png)
 
 ### 8. 用户管理
 
 管理员维护账号与权限，控制谁可访问助手及各项能力。
 
-![用户管理](docs/images/8用户管理.png)
+![用户管理](docs/images/08-user-manage.png)
 
 ---
 
