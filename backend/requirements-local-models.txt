@@ -1,0 +1,6 @@
+# 可选：本机跑 BGE-M3 / CrossEncoder 时安装
+#   pip install -r requirements-local-models.txt
+# 并设置 EMBEDDING_PROVIDER=local、RERANK_PROVIDER=local
+pymilvus[model]>=2.4.0
+sentence-transformers>=3.0.0
+torch>=2.0.0

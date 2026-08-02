@@ -1,0 +1,35 @@
+[Unit]
+Description=LangGraph Demo API (uvicorn, single worker)
+After=network-online.target postgresql.service docker.service
+Wants=network-online.target
+# 若 Milvus 用本机 docker compose 起，可加上：
+# After=docker.service
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/langgraph-demo
+
+# 虚拟环境与代码路径按机器修改
+Environment=PYTHONPATH=/opt/langgraph-demo
+EnvironmentFile=-/opt/langgraph-demo/backend/.env
+
+# 单 worker 不可改为多进程；SSE / ActiveRun 为进程内状态
+ExecStart=/opt/langgraph-demo/.venv/bin/uvicorn backend.main:app \
+    --host 127.0.0.1 \
+    --port 8000 \
+    --workers 1 \
+    --proxy-headers \
+    --forwarded-allow-ips 127.0.0.1
+
+Restart=on-failure
+RestartSec=5
+TimeoutStartSec=120
+
+# 基础加固
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

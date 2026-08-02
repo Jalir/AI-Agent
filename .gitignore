@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+
+# Secrets — keep committed examples
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Local runtime data (Milvus Lite / Docker)
+milvus_demo.db/
+**/milvus_demo.db
+volumes/
+
+# HuggingFace / model caches (if placed under the repo)
+.cache/
+models/
+
+# IDE / agent
+.claude/
+.idea/
+.vscode/
+*.sw?
+.DS_Store
+
+# Logs
+logs/
+*.log
+
+# Frontend (also covered by frontend/.gitignore)
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/

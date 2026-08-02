@@ -1,0 +1,142 @@
+# 生产编排：Postgres + Milvus + API(单 worker) + Nginx(前端同源反代)
+# 用法：
+#   1. cp backend/.env.example backend/.env 并填好密钥；再对照 deploy/env.prod.example 改主机名相关项
+#   2. docker compose -f docker-compose.prod.yml up -d --build
+# 注意：API 必须单副本；勿对公网暴露 postgres / milvus / minio 端口
+
+name: langgraph-prod
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: langgraph-postgres
+    restart: unless-stopped
+    # 使用 backend/.env 里的 POSTGRES_USER / PASSWORD / DB
+    env_file:
+      - ./backend/.env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-langgraph_chat}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      # POSTGRES_PASSWORD 来自 env_file，勿在此写死
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - internal
+    # 调试时可临时打开：ports: ["127.0.0.1:5432:5432"]
+
+  etcd:
+    container_name: langgraph-etcd
+    image: quay.io/coreos/etcd:v3.5.5
+    restart: unless-stopped
+    environment:
+      - ETCD_AUTO_COMPACTION_MODE=revision
+      - ETCD_AUTO_COMPACTION_RETENTION=1000
+      - ETCD_QUOTA_BACKEND_BYTES=4294967296
+      - ETCD_SNAPSHOT_COUNT=50000
+    volumes:
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/etcd:/etcd
+    command: etcd -advertise-client-urls=http://127.0.0.1:2379 -listen-client-urls http://0.0.0.0:2379 --data-dir /etcd
+    healthcheck:
+      test: ["CMD", "etcdctl", "endpoint", "health"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    networks:
+      - internal
+
+  minio:
+    container_name: langgraph-minio
+    image: minio/minio:RELEASE.2024-12-18T13-15-44Z
+    platform: linux/amd64
+    restart: unless-stopped
+    environment:
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-minioadmin}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-minioadmin}
+    volumes:
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/minio:/minio_data
+    command: minio server /minio_data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    networks:
+      - internal
+    # 勿对公网映射 9000/9001
+
+  milvus:
+    container_name: langgraph-milvus
+    image: milvusdb/milvus:v2.4.15
+    platform: linux/amd64
+    restart: unless-stopped
+    command: ["milvus", "run", "standalone"]
+    security_opt:
+      - seccomp:unconfined
+    environment:
+      ETCD_ENDPOINTS: etcd:2379
+      MINIO_ADDRESS: minio:9000
+    volumes:
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/milvus:/var/lib/milvus
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9091/healthz"]
+      interval: 30s
+      start_period: 90s
+      timeout: 20s
+      retries: 3
+    depends_on:
+      - etcd
+      - minio
+    networks:
+      - internal
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: langgraph-api
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env
+    environment:
+      # 覆盖开发机 localhost，指向 compose 内网服务名
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      MILVUS_URI: http://milvus:19530
+    depends_on:
+      postgres:
+        condition: service_healthy
+      milvus:
+        condition: service_started
+    networks:
+      - internal
+    # 单副本：勿 scale api；workers 已在镜像 CMD 固定为 1
+
+  nginx:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile.nginx
+    container_name: langgraph-nginx
+    restart: unless-stopped
+    ports:
+      - "${HTTP_PORT:-80}:80"
+      # HTTPS：取消注释并挂载证书，同时改 deploy/nginx.conf
+      # - "${HTTPS_PORT:-443}:443"
+    # volumes:
+    #   - ./deploy/certs:/etc/nginx/certs:ro
+    depends_on:
+      - api
+    networks:
+      - internal
+
+networks:
+  internal:
+    name: langgraph-internal
+
+volumes:
+  pgdata:
+    name: langgraph-pgdata

@@ -1,0 +1,34 @@
+.git
+.github
+.venv
+venv
+**/__pycache__
+**/*.py[cod]
+**/.pytest_cache
+**/.mypy_cache
+
+# Secrets & local env (compose 用 env_file 注入)
+backend/.env
+.env
+.env.*
+!.env.example
+
+# Local runtime
+milvus_demo.db
+milvus_demo.db/
+volumes/
+logs/
+.cache/
+models/
+
+# Frontend (nginx 镜像单独构建)
+frontend/node_modules
+frontend/dist
+frontend/dist-ssr
+
+# Deploy docs / IDE
+.claude
+.idea
+.vscode
+*.md
+agent-transcripts

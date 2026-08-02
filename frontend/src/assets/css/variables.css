@@ -1,0 +1,69 @@
+:root,
+[data-theme='light'] {
+  --rail-width: 64px;
+  --sidebar-width: 280px;
+  --chat-content-width: 760px;
+  --sidebar-bg: #f7f8fa;
+  --rail-bg: #f0f1f5;
+  --sidebar-hover: #e8eaef;
+  --sidebar-active: #e8efff;
+  --sidebar-active-text: #3370ff;
+  --border-color: #e8eaed;
+  --text-primary: #1d2129;
+  --text-secondary: #4e5969;
+  --text-muted: #86909c;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f7f8fa;
+  --bg-tertiary: #f2f3f5;
+  --accent: #3370ff;
+  --accent-hover: #245bdb;
+  --accent-light: #e8efff;
+  --user-bubble-bg: #eef2ff;
+  --user-bubble-text: #1d2129;
+  --assistant-bubble-bg: transparent;
+  --assistant-bubble-border: transparent;
+  --danger: #f53f3f;
+  --danger-hover: #cb2634;
+  --input-bg: #ffffff;
+  --input-border: #e5e6eb;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.06);
+  --shadow-input: 0 4px 20px rgba(15, 23, 42, 0.06), 0 0 0 1px rgba(15, 23, 42, 0.04);
+  --shadow-input-hover: 0 8px 28px rgba(15, 23, 42, 0.08), 0 0 0 1px rgba(51, 112, 255, 0.12);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 22px;
+  --font-sans: "PingFang SC", "Noto Sans SC", "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+[data-theme='dark'] {
+  --sidebar-bg: #1a1b23;
+  --rail-bg: #14151c;
+  --sidebar-hover: #252631;
+  --sidebar-active: rgba(51, 112, 255, 0.22);
+  --sidebar-active-text: #7aa2ff;
+  --border-color: #2d2e3a;
+  --text-primary: #e8eaed;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --bg-primary: #12131a;
+  --bg-secondary: #1a1b23;
+  --bg-tertiary: #22232e;
+  --accent: #7aa2ff;
+  --accent-hover: #93bbfd;
+  --accent-light: rgba(51, 112, 255, 0.18);
+  --user-bubble-bg: #2a2d44;
+  --user-bubble-text: #e8eaed;
+  --assistant-bubble-bg: transparent;
+  --assistant-bubble-border: transparent;
+  --danger: #f87171;
+  --danger-hover: #fca5a5;
+  --input-bg: #1a1b23;
+  --input-border: #2d2e3a;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-input: 0 4px 20px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.04);
+  --shadow-input-hover: 0 8px 28px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(122, 162, 255, 0.2);
+}
