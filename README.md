@@ -163,4 +163,4 @@ docker-compose*.yml
 
 ## License
 
-暂未选择开源许可证。使用前请与维护者确认。
+[MIT](LICENSE)
