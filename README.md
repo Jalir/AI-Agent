@@ -1,17 +1,20 @@
-# LangGraph Demo
+# AI Agent
 
-用 LangGraph 搭的多工具 AI 助手：对话、知识库 RAG、文档 / 销售分析，以及生图与语音能力。
+面向企业内部场景的多工具智能助手：对话 Agent、知识库 RAG、文档 / 销售分析，以及文生图、图像编辑与语音能力。
 
 后端 FastAPI · 前端 Vue 3 · 向量库 Milvus · 状态持久化 PostgreSQL。
 
+仓库：[github.com/Jalir/AI-Agent](https://github.com/Jalir/AI-Agent)
+
 ---
 
-## 能做什么
+## 核心能力
 
-- **对话 Agent** — SSE 流式输出，意图路由，工具调用，敏感操作人工审批
-- **知识库 RAG** — 文档分层索引（Postgres + Milvus），Embedding + Rerank
-- **临时工作区** — 文档问答 / 销售 Excel 分析，带 TTL 自动清理
-- **多媒体** — 文生图、图编、声音克隆、语音转写
+- **对话 Agent** — SSE 流式输出，意图路由，工具调用，敏感操作人工审批（HITL）
+- **知识库 RAG** — 文档分层索引（Postgres + Milvus），Embedding 召回 + Rerank 精排，答案可回溯引用
+- **业务工作区** — 临时文档问答 / 销售 Excel 自然语言分析，带 TTL 自动清理
+- **多媒体** — 文生图、图像编辑、声音克隆、语音转写（支持 OpenAI 兼容 API；视觉链路可对接 ComfyUI 本地部署）
+- **权限与运维** — 用户管理与能力权限；Docker / 裸机生产部署方案
 
 ---
 
@@ -31,7 +34,7 @@
 
 ### 3. 声音克隆
 
-上传参考音频，克隆音色后合成指定文本的语音，适合演示、配音等场景。
+上传参考音频，克隆音色后合成指定文本的语音，适合配音、培训讲解等场景。
 
 ![声音克隆](docs/images/03-voice-clone.png)
 
@@ -78,19 +81,19 @@ Vue 3  ──►  Nginx / Vite  ──►  FastAPI
                + Tools          (状态)        (向量)
 ```
 
-工具放在 `backend/tools/{public,gated}/`，按目录约定即可扩展。
+工具放在 `backend/tools/{public,gated}/`，按目录约定即可扩展；`gated` 工具走人工审批后再执行。
 
 ---
 
 ## 技术栈
 
-| | |
+| 层级 | 选型 |
 |---|---|
 | Agent | LangGraph · LangChain |
-| API | FastAPI · Uvicorn（单 worker） |
+| API | FastAPI · Uvicorn（单 worker，适配 SSE） |
 | 前端 | Vue 3 · Vite · Pinia |
 | 数据 | PostgreSQL · Milvus · 阿里云 OSS |
-| 模型 | OpenAI 兼容 API（LLM / Embedding / 生图 / 语音） |
+| 模型 | OpenAI 兼容 API（LLM / Embedding / 生图 / 语音）；可对接本地 ComfyUI |
 
 ---
 
@@ -103,7 +106,7 @@ cp backend/.env.example backend/.env
 # 填好 LLM、Embedding、Postgres、OSS、JWT_SECRET
 ```
 
-开发可用 Milvus Lite（默认 `MILVUS_URI=./milvus_demo.db`）；需要 Standalone 时执行 `docker compose up -d`。
+本地开发可用 Milvus Lite（默认 `MILVUS_URI=./milvus_demo.db`）；需要 Standalone 时执行 `docker compose up -d`。
 
 **后端**
 
@@ -141,7 +144,7 @@ docker compose -f docker-compose.prod.yml up -d --build
 **务必注意**
 
 - API 保持单副本、单 worker（SSE 状态在进程内）
-- 生产不要用 Milvus Lite
+- 生产环境请使用 Milvus Standalone，不要用 Lite
 - 不要把数据库 / Milvus 端口暴露到公网
 
 裸机部署见 `deploy/systemd/` 与 `deploy/nginx.host.conf`。
