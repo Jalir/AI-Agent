@@ -18,6 +18,8 @@ bcrypt>=4.0.0
 oss2>=2.19.0
 # 向量库客户端（不含本地 embedding 模型依赖）
 pymilvus[milvus_lite]>=2.4.0
+# Milvus 中文分析器（analyzer_params type=chinese / JiebaAnalyzer）需要
+jieba>=0.42.1
 python-docx>=1.1.0
 openpyxl>=3.1.0
 pandas>=2.2.0

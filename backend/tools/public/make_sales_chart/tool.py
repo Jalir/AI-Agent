@@ -22,12 +22,13 @@ async def make_sales_chart(
     limit: int = 50,
     time_grain: str = "",
 ) -> str:
-    """生成销售图表（bar/line/pie）。默认 use_last_query=true 复用本轮 query 的 rows，勿再查库。
+    """生成销售图表（bar/hbar/line/pie）。默认 use_last_query=true 复用本轮 query 的 rows，勿再查库。
     category_column/value_column 必填且须为结果列；一句话多图先拆清定义再分别调用。仅分析/出图时不要 export。
+    商品名等长类目优先用 hbar（横向柱），避免底部名称被挤掉。
 
     Args:
         table_id: 表 ID（仅 use_last_query=false 时需要）
-        chart_type: bar | line | pie
+        chart_type: bar | hbar | line | pie（hbar=横向柱，适合长类目名）
         title: 标题
         category_column: 类目列（必填）
         value_column: 数值列（必填）

@@ -7,7 +7,7 @@ from backend.tools.public.query_sales_data.tool import TOOL_NAME, query_sales_da
 
 TOOL = query_sales_data
 REQUIRES_APPROVAL = False
-MAX_CALLS_PER_TURN = 1
+MAX_CALLS_PER_TURN = 5
 
 __all__ = [
     "TOOL",

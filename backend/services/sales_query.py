@@ -533,8 +533,13 @@ def build_echarts_option(
     values: list[Any],
     series_name: str = "数值",
 ) -> dict[str, Any]:
-    ctype = (chart_type or "bar").strip().lower()
-    if ctype not in {"bar", "line", "pie"}:
+    raw = (chart_type or "bar").strip().lower()
+    # 横向柱状图别名（长类目名时更易读）
+    if raw in {"hbar", "bar_horizontal", "horizontal_bar", "horizontal"}:
+        ctype = "hbar"
+    elif raw in {"bar", "line", "pie"}:
+        ctype = raw
+    else:
         ctype = "bar"
     cats = ["" if c is None else str(c) for c in categories]
     nums: list[float] = []
@@ -559,11 +564,56 @@ def build_echarts_option(
             ],
         }
 
+    # 横向柱：类目在 Y 轴，避免底部长名称被 ECharts 自动隐藏
+    if ctype == "hbar":
+        return {
+            "title": {"text": title or "图表", "left": "center"},
+            "tooltip": {"trigger": "axis", "axisPointer": {"type": "shadow"}},
+            "grid": {
+                "left": "3%",
+                "right": "8%",
+                "top": "16%",
+                "bottom": "3%",
+                "containLabel": True,
+            },
+            "xAxis": {"type": "value"},
+            "yAxis": {
+                "type": "category",
+                "data": cats,
+                "inverse": True,
+                "axisLabel": {"interval": 0},
+            },
+            "series": [
+                {
+                    "name": series_name or "数值",
+                    "type": "bar",
+                    "data": nums,
+                }
+            ],
+        }
+
+    # 纵向 bar/line：强制显示全部类目；名称较长时旋转，避免 interval=auto 隔一个藏一个
+    max_cat_len = max((len(c) for c in cats), default=0)
+    rotate = 35 if max_cat_len > 4 or len(cats) > 4 else 0
+    bottom = "22%" if rotate else "10%"
     return {
         "title": {"text": title or "图表", "left": "center"},
         "tooltip": {"trigger": "axis"},
-        "grid": {"left": "3%", "right": "4%", "bottom": "8%", "containLabel": True},
-        "xAxis": {"type": "category", "data": cats},
+        "grid": {
+            "left": "3%",
+            "right": "4%",
+            "bottom": bottom,
+            "containLabel": True,
+        },
+        "xAxis": {
+            "type": "category",
+            "data": cats,
+            "axisLabel": {
+                "interval": 0,
+                "rotate": rotate,
+                "hideOverlap": False,
+            },
+        },
         "yAxis": {"type": "value"},
         "series": [
             {

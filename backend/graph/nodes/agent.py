@@ -294,6 +294,7 @@ async def agent_node(state: Mapping[str, Any], config: RunnableConfig) -> dict:
                 hint = (
                     f"{INTERNAL_HINT_PREFIX}已有查询结果，禁止再 query/list；"
                     "若已是 aggregate：直接 make_sales_chart(use_last_query=true) 并写摘要；"
+                    "长商品名/类目用 chart_type=hbar；"
                     "sum_numbers 仅可对少量汇总行做二次计算，勿对明细预览列充全量合计。"
                     f" 刚执行：{just}。"
                 )

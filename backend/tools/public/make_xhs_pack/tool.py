@@ -1,4 +1,4 @@
-"""批量小红书图文包：并发写文案 + 可选生图，按序号推前端卡片。"""
+"""批量小红书图文包：并发写文案 + 可选生图，完成一条即推一条卡片。"""
 
 from __future__ import annotations
 
@@ -146,11 +146,11 @@ async def run_make_xhs_pack(
     total = len(materials)
     style_s = (style or "种草").strip() or "种草"
     want_image = bool(with_image)
-    await emit_status(thread_id, f"正在生成图文（共 {total} 条）…")
+    await emit_status(thread_id, f"正在生成图文…")
 
     sem = asyncio.Semaphore(_PACK_CONCURRENCY)
-    cards = await asyncio.gather(
-        *[
+    tasks = [
+        asyncio.create_task(
             _build_one_card(
                 i,
                 material,
@@ -158,14 +158,16 @@ async def run_make_xhs_pack(
                 want_image=want_image,
                 sem=sem,
             )
-            for i, material in enumerate(materials, start=1)
-        ]
-    )
+        )
+        for i, material in enumerate(materials, start=1)
+    ]
 
+    # 谁先完成谁先推 SSE；前端按 index 排序展示，无需等整包
     ok = 0
     copy_fail = 0
     image_fail = 0
-    for card in sorted(cards, key=lambda c: int(c.get("index") or 0)):
+    for done in asyncio.as_completed(tasks):
+        card = await done
         if card.pop("_copy_ok", False):
             ok += 1
         else:

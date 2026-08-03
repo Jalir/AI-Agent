@@ -113,14 +113,3 @@ def _load_chunks(
         return loader.load_documents_from_folder(source)
 
     return loader.load_documents_from_sources([source], filenames, path_meta)
-
-
-if __name__ == "__main__":
-    asyncio.run(build_index(r"F:\langgraph-demo\backend\test"))
-    print("索引完成")
-
-    # from langchain_huggingface import HuggingFaceEmbeddings
-    # embedding = HuggingFaceEmbeddings(model_name="BAAI/bge-m3")
-    # # 测试
-    # vec = embedding.embed_query("测试医疗RAG")
-    # print("向量维度：",len(vec))  # 输出1024就是成功！
